@@ -647,7 +647,23 @@ function initializeDefaults(){
 }
 
 document.addEventListener('DOMContentLoaded',()=>{
-  initializeDefaults();addAudit('NCR created','Blank NCR initialized','System');
+  // Build the dynamic controls first, then restore the most recent device draft.
+  // This prevents a blank startup record from replacing a valid saved NCR.
+  const savedDraft=localStorage.getItem(STORAGE_KEY);
+  initializeDefaults();
+  if(savedDraft){
+    try{
+      applyData(JSON.parse(savedDraft));
+      addAudit('Draft restored','Automatically restored the most recent device draft','System');
+      $('autosaveText').textContent='Saved draft restored';
+      showToast('Saved NCR restored from this device.','success');
+    }catch(error){
+      addAudit('Draft restore failed',error?.message||'Saved device draft could not be read','System');
+      showToast('The saved draft could not be restored. A new NCR was opened.','error');
+    }
+  }else{
+    addAudit('NCR created','Blank NCR initialized','System');
+  }
   document.querySelectorAll('[data-track]').forEach(el=>{el.addEventListener('input',scheduleRefresh);el.addEventListener('change',scheduleRefresh);});
   document.querySelectorAll('#isoClauses input,#causeCategories input').forEach(el=>el.addEventListener('change',scheduleRefresh));
   ['integrationMode','organizationId','northstarUserId','northstarEndpoint','reportAudience'].forEach(id=>$(id)?.addEventListener('change',refreshAll));
