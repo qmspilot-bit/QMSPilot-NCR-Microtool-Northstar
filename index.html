@@ -353,12 +353,12 @@
         <section class="card">
           <div class="card-head"><div class="section-title-wrap"><span class="section-number">10</span><div><h3>Northstar Integration & Submission</h3><p>Use the shared bridge in a hosted Northstar session, post directly to an API endpoint, or queue the record locally for demonstration.</p></div></div></div>
           <div class="card-body"><div class="integration-box"><div class="grid">
-            <div class="field"><label>Integration Mode</label><select id="integrationMode"><option value="bridge">Northstar Host Bridge</option><option value="api">Direct API Endpoint</option><option value="queue">Local Queue / Demo</option></select></div>
+            <div class="field"><label>Integration Mode</label><select id="integrationMode"><option value="bridge">Northstar Host Bridge</option><option value="api" selected>Direct Northstar Connection</option><option value="queue">Local Queue / Demo</option></select></div>
             <div class="field"><label>Organization ID</label><input id="organizationId" placeholder="Northstar tenant / organization ID"></div>
             <div class="field"><label>User ID</label><input id="northstarUserId" placeholder="Authenticated Northstar user ID"></div>
-            <div class="field eight"><label>API Endpoint</label><input id="northstarEndpoint" value="/api/northstar/v1/records" placeholder="https://.../api/northstar/v1/records"></div>
-            <div class="field"><label>Bearer Token</label><input id="northstarToken" type="password" autocomplete="off" placeholder="Not saved or exported"></div>
-            <div class="field full"><div class="inline-checks"><button class="btn btn-northstar" onclick="submitToNorthstar()">✦ Validate & Submit to Northstar</button><button class="btn btn-ghost" onclick="retryQueuedSubmission()">↻ Retry Queued Record</button><button class="btn btn-ghost" onclick="switchTab('payload')">View Payload</button></div><div class="integration-note">The tool first looks for <code>window.QMSPilotNorthstar.submitRecord()</code>. Direct API mode sends structured JSON plus attached files as multipart form data. Queue mode saves a submission packet locally for demonstration and later synchronization.</div></div>
+            <div class="field eight"><label>API Endpoint</label><input id="northstarEndpoint" value="https://mcdxriothpcadqcaarui.supabase.co/functions/v1/northstar-ncr-ingest" placeholder="Northstar receiving endpoint"></div>
+            <div class="field"><label>Connection Security</label><input id="northstarToken" type="password" autocomplete="off" placeholder="Managed by Northstar" disabled></div>
+            <div class="field full"><div class="inline-checks"><button class="btn btn-northstar" onclick="submitToNorthstar()">✦ Validate & Submit to Northstar</button><button class="btn btn-ghost" onclick="retryQueuedSubmission()">↻ Retry Queued Record</button><button class="btn btn-ghost" onclick="switchTab('payload')">View Payload</button></div><div class="integration-note">Direct Northstar Connection securely sends the structured NCR record and attached evidence to the Northstar receiving service. Queue mode remains available when the device is offline.</div></div>
           </div></div></div>
         </section>
 
@@ -642,7 +642,7 @@ function loadDemo(){
 }
 
 function initializeDefaults(){
-  $('ncrNumber').value=generateNcrNumber();$('dateOpened').value=today();$('timeOpened').value=timeNow();$('detectionDate').value=today();$('containmentDateTime').value=new Date(Date.now()-new Date().getTimezoneOffset()*60000).toISOString().slice(0,16);$('dispositionDueDate').value=addDays(3);$('effectivenessTargetDate').value=addDays(30);$('ncrStatus').value='Open';$('containmentRequired').value='Yes';$('rcaRequired').value='Yes';$('recommendedDisposition').value='';$('severity').value='';$('source').value='';$('finalDisposition').value='Pending';$('effectivenessResult').value='Pending';
+  $('integrationMode').value='api';$('northstarEndpoint').value='https://mcdxriothpcadqcaarui.supabase.co/functions/v1/northstar-ncr-ingest';$('ncrNumber').value=generateNcrNumber();$('dateOpened').value=today();$('timeOpened').value=timeNow();$('detectionDate').value=today();$('containmentDateTime').value=new Date(Date.now()-new Date().getTimezoneOffset()*60000).toISOString().slice(0,16);$('dispositionDueDate').value=addDays(3);$('effectivenessTargetDate').value=addDays(30);$('ncrStatus').value='Open';$('containmentRequired').value='Yes';$('rcaRequired').value='Yes';$('recommendedDisposition').value='';$('severity').value='';$('source').value='';$('finalDisposition').value='Pending';$('effectivenessResult').value='Pending';
   approvals=[];['Quality','Engineering','Operations'].forEach(fn=>addApproval({function:fn}));whys=[];for(let i=0;i<5;i++)addWhy();actions=[];addAction({type:'Correction'});addAction({type:'Corrective Action'});renderEvidence();lastStatus='Open';refreshAll();
 }
 
